@@ -19,7 +19,7 @@ if (isset($_GET['id'])) {
             
             if ($row['type'] === 'Entrada') {
                 $totalIncome += $row['value'];
-            } elseif ($row['type'] === 'Saída') {
+            } elseif ($row['type'] === 'Saida') {
                 $totalExpense += $row['value'];
             }
         }
@@ -226,7 +226,7 @@ if (isset($_GET['id'])) {
                         placeholder="Digite o valor" required oninput="formatMoney(this)" />
                 </div>
 
-                <!-- Campo Tipo (Entrada ou Saída) -->
+                <!-- Campo Tipo (Entrada ou Saida) -->
                 <div>
                     <label for="tipo" class="block text-sm font-medium">Tipo</label>
                     <select name="type"
@@ -234,7 +234,7 @@ if (isset($_GET['id'])) {
                         required>
                         <option value="">Selecione o tipo</option>
                         <option value="Entrada">Entrada</option>
-                        <option value="Saída">Saída</option>
+                        <option value="Saida">Saida</option>
                     </select>
                 </div>
 

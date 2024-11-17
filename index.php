@@ -16,7 +16,7 @@ if ($result->num_rows > 0) {
         $transaction_sql = "
             SELECT 
                 SUM(CASE WHEN type = 'Entrada' THEN value ELSE 0 END) AS total_income,
-                SUM(CASE WHEN type = 'Saída' THEN value ELSE 0 END) AS total_expense
+                SUM(CASE WHEN type = 'Saida' THEN value ELSE 0 END) AS total_expense
             FROM transactions
             WHERE month_id = $month_id
         ";
