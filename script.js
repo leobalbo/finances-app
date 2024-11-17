@@ -19,3 +19,21 @@ modal.addEventListener("click", (event) => {
         modal.classList.add("hidden");
     }
 });
+
+// MASCARA PARA VALORES
+function formatMoney(input) {
+    // Remove caracteres não numéricos
+    let value = input.value.replace(/\D/g, '');
+
+    // Divide o valor por 100 para ter centavos
+    let formattedValue = (value / 100).toFixed(2);
+
+    // Substitui o ponto por vírgula
+    formattedValue = formattedValue.replace('.', ',');
+
+    // Adiciona separadores de milhares
+    formattedValue = formattedValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+
+    // Adiciona o "R$" na frente
+    input.value = formattedValue ? `R$ ${formattedValue}` : '';
+}

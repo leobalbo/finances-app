@@ -1,3 +1,37 @@
+<?php
+session_start();
+require_once('actions/connect.php');
+
+if (isset($_GET['id'])) {
+    $month_id = intval($_GET['id']);
+
+    $sql = "SELECT * FROM transactions WHERE month_id = $month_id";
+    $result = mysqli_query($conn, $sql);
+
+    $totalIncome = 0;
+    $totalExpense = 0;
+    $finalBalance = 0;
+
+    $transactions = [];
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $transactions[] = $row; 
+            
+            if ($row['type'] === 'Entrada') {
+                $totalIncome += $row['value'];
+            } elseif ($row['type'] === 'Saída') {
+                $totalExpense += $row['value'];
+            }
+        }
+        $finalBalance = $totalIncome - $totalExpense;
+    }
+
+} else {
+    echo "ID do mês não especificado.";
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -26,29 +60,57 @@
             </button>
         </div>
 
-        <!-- GRÁFICOS -->
-        <div class="grid grid-cols-2 gap-4">
-            <div class="rounded-xl border bg-card shadow">
-                <div class="flex flex-col space-y-1.5 p-6">
-                    <span class="font-semibold leading-none tracking-tight">Gráfico de despesas Geral</span>
-                    <span class="text-sm">Despesas geral</span>
-                </div>
-                <div class="p-6 pt-0">
-                    <div class="h-[200px] flex items-center justify-center border rounded">
-                        GRÁFICO AQUI - FAZER DEPOIS
-                    </div>
-                </div>
+        <div class="mb-8 border rounded-xl shadow bg-white">
+            <div class="border-b p-4">
+                <h2 class="font-bold">Resumo Mensal</h2>
             </div>
-
-            <div class="rounded-xl border bg-card shadow">
-                <div class="flex flex-col space-y-1.5 p-6">
-                    <span class="font-semibold leading-none tracking-tight">Gráfico de despesas por Tipo</span>
-                    <span class="text-sm">Despesas por tipo</span>
-                </div>
-                <div class="p-6 pt-0">
-                    <div class="h-[200px] flex items-center justify-center border rounded">
-                        GRÁFICO AQUI - FAZER DEPOIS
+            <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Total Ganho -->
+                <div class="flex items-center justify-between p-4 bg-green-100 rounded-lg transition-all duration-300 hover:scale-105">
+                    <div>
+                        <p class="text-sm font-medium text-green-800">Total Ganho</p>
+                        <p class="text-2xl font-bold text-green-900">
+                            R$ <?= number_format($totalIncome, 2, ',', '.') ?>
+                        </p>
                     </div>
+                    <svg class="h-8 w-8 text-green-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="m5 12 7-7 7 7" />
+                        <path d="M12 19V5" />
+                    </svg>
+                </div>
+
+                <!-- Total Gasto -->
+                <div class="flex items-center justify-between p-4 bg-red-100 rounded-lg transition-all duration-300 hover:scale-105">
+                    <div>
+                        <p class="text-sm font-medium text-red-800">Total Gasto</p>
+                        <p class="text-2xl font-bold text-red-900">
+                            R$ <?= number_format($totalExpense, 2, ',', '.') ?>
+                        </p>
+                    </div>
+                    <svg class="h-8 w-8 text-red-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 5v14" />
+                        <path d="m19 12-7 7-7-7" />
+                    </svg>
+                </div>
+
+                <!-- Saldo Final -->
+                <div class="flex items-center justify-between p-4 bg-blue-100 rounded-lg transition-all duration-300 hover:scale-105">
+                    <div>
+                        <p class="text-sm font-medium text-blue-800">Saldo Final</p>
+                        <p class="text-2xl font-bold text-blue-900">
+                            R$ <?= number_format($finalBalance, 2, ',', '.') ?>
+                        </p>
+                    </div>
+                    <svg class="h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="12" x2="12" y1="2" y2="22" />
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
                 </div>
             </div>
         </div>
@@ -78,58 +140,40 @@
                     <!-- BODY -->
                     <tbody class="[&_tr:last-child]:border-0">
                         <!-- DADOS -->
-                        <tr class="border-b transition-colors hover:bg-zinc-200 my-2">
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">1</th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">Marmita - Almoço</th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">Alimentação</th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">
-                                <span class='text-zinc-50 bg-red-600 py-1 px-2 rounded'>
-                                    SAIDA
-                                </span>
-                            </th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">
-                                R$ 1.000,00
-                            </th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">12/11/2024</th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">
-                                <span class="flex items-center justify-center gap-2 cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                        <path
-                                            d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
-                                    </svg>
-                                    Editar
-                                </span>
-                            </th>
-                        </tr>
-                        <tr class="border-b transition-colors hover:bg-zinc-200 my-2">
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">2</th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">Gorduroso</th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">Salário</th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">
-                                <span class='text-zinc-50 bg-emerald-600 py-1 px-2 rounded'>
-                                    ENTRADA
-                                </span>
-                            </th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">
-                                R$ 3.432,00
-                            </th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">07/11/2024</th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium">
-                                <span class="flex items-center justify-center gap-2 cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                        <path
-                                            d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
-                                    </svg>
-                                    Editar
-                                </span>
-                            </th>
-                        </tr>
+                        <?php if (!empty($transactions)): ?>
+                            <?php foreach ($transactions as $transaction): ?>
+                                <tr class="border-b transition-colors hover:bg-zinc-200 my-2">
+                                    <td class="h-10 px-2 py-4 text-left align-middle font-medium"><?= $transaction['id']; ?></td>
+                                    <td class="h-10 px-2 py-4 text-left align-middle font-medium"><?= $transaction['name']; ?></td>
+                                    <td class="h-10 px-2 py-4 text-left align-middle font-medium"><?= $transaction['category']; ?></td>
+                                    <td class="h-10 px-2 py-4 text-left align-middle font-medium">
+                                        <span class="<?= $transaction['type'] === 'Saida' ? 'text-zinc-50 bg-red-600 py-1 px-2 rounded' : 'text-zinc-50 bg-emerald-600 py-1 px-2 rounded'; ?>">
+                                            <?= strtoupper($transaction['type']); ?>
+                                        </span>
+                                    </td>
+                                    <td class="h-10 px-2 py-4 text-left align-middle font-medium">
+                                        R$ <?= number_format($transaction['value'], 2, ',', '.'); ?>
+                                    </td>
+                                    <td class="h-10 px-2 py-4 text-left align-middle font-medium"><?= date('d/m/Y', strtotime($transaction['date'])); ?></td>
+                                    <th class="h-10 px-2 py-4 text-left align-middle font-medium">
+                                        <span class="flex items-center justify-center gap-2 cursor-pointer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                <path
+                                                    d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
+                                            </svg>
+                                            Editar
+                                        </span>
+                                    </th>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="h-10 px-2 py-4 text-center align-middle font-medium">Nenhuma transação encontrada.</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -154,11 +198,14 @@
             <p class="text-sm text-gray-500">Cadastre suas despesas</p>
 
             <!-- Formulário de Despesas -->
-            <form class="mt-4 space-y-4">
+            <form action="actions/finances.php" method="POST" class="mt-4 space-y-4">
+
+                <input type="hidden" name="month_id" value="<?= intval($_GET['id']); ?>">
+
                 <!-- Campo Nome -->
                 <div>
                     <label for="nome" class="block text-sm font-medium">Nome</label>
-                    <input type="text" id="nome"
+                    <input type="text" name="name"
                         class="w-full mt-1 px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
                         placeholder="Digite o nome" required />
                 </div>
@@ -166,7 +213,7 @@
                 <!-- Campo Data -->
                 <div>
                     <label for="data" class="block text-sm font-medium">Data</label>
-                    <input type="date" id="data"
+                    <input type="date" name="date"
                         class="w-full mt-1 px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
                         required />
                 </div>
@@ -174,37 +221,39 @@
                 <!-- Campo Valor -->
                 <div>
                     <label for="valor" class="block text-sm font-medium">Valor</label>
-                    <input type="number" id="valor"
+                    <input type="text" id="valor" name="value"
                         class="w-full mt-1 px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
-                        placeholder="Digite o valor" required />
+                        placeholder="Digite o valor" required oninput="formatMoney(this)" />
                 </div>
 
                 <!-- Campo Tipo (Entrada ou Saída) -->
                 <div>
                     <label for="tipo" class="block text-sm font-medium">Tipo</label>
-                    <select id="tipo"
+                    <select name="type"
                         class="w-full mt-1 px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
                         required>
                         <option value="">Selecione o tipo</option>
-                        <option value="entrada">Entrada</option>
-                        <option value="saida">Saída</option>
+                        <option value="Entrada">Entrada</option>
+                        <option value="Saída">Saída</option>
                     </select>
                 </div>
 
                 <!-- Campo Categoria -->
                 <div>
                     <label for="categoria" class="block text-sm font-medium">Categoria</label>
-                    <select id="categoria"
+                    <select name="category"
                         class="w-full mt-1 px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
                         required>
                         <option value="">Selecione a categoria</option>
-                        <option value="alimentacao">Alimentação</option>
-                        <option value="transporte">Transporte</option>
+                        <option value="Alimentação">Alimentação</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Lazer">Lazer</option>
+                        <option value="Salario">Salario</option>
                     </select>
                 </div>
 
                 <!-- Botão de Enviar -->
-                <button type="submit"
+                <button type="submit" name="add_transaction"
                     class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
                     Cadastrar
                 </button>
