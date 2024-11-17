@@ -10,6 +10,13 @@ if (isset($_POST['add_transaction'])) {
     $category = mysqli_real_escape_string($conn, $_POST['category']);
     $month_id = mysqli_real_escape_string($conn, $_POST['month_id']);
 
+    
+    $value_without_currency = str_replace('R$', '', $value);
+    $value_without_points = str_replace('.', '', $value_without_currency);
+    $value = str_replace(',', '.', $value_without_points);
+
+    $value = (float) $value;
+
     $sql = "INSERT INTO transactions (name, date, value, type, category, month_id) VALUES ('$name', '$date', '$value', '$type', '$category', $month_id)";
 
     mysqli_query($conn, $sql);
