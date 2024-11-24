@@ -49,7 +49,11 @@ if (isset($_GET['id'])) {
 
         <!-- Header -->
         <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Histórico de transações</h1>
+            <a href="index.php" class="bg-rose-500 hover:bg-rose-600 text-white font-semibold py-2 px-4 rounded flex gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-corner-down-left"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
+                Voltar
+            </a>
+            <h1 class="text-2xl font-bold w-auto ml-28">Histórico de transações</h1>
             <button id="openModalButton" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded flex gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="">
@@ -133,7 +137,7 @@ if (isset($_GET['id'])) {
                             <th class="h-10 px-2 py-4 text-left align-middle font-medium">Tipo</th>
                             <th class="h-10 px-2 py-4 text-left align-middle font-medium">Valor</th>
                             <th class="h-10 px-2 py-4 text-left align-middle font-medium">Data</th>
-                            <th class="h-10 px-2 py-4 text-left align-middle font-medium"></th>
+                            <th class="h-10 px-2 py-4 text-left align-middle font-medium w-36"></th>
                         </tr>
                     </thead>
 
@@ -155,7 +159,7 @@ if (isset($_GET['id'])) {
                                         R$ <?= number_format($transaction['value'], 2, ',', '.'); ?>
                                     </td>
                                     <td class="h-10 px-2 py-4 text-left align-middle font-medium"><?= date('d/m/Y', strtotime($transaction['date'])); ?></td>
-                                    <th class="h-10 px-2 py-4 text-left align-middle font-medium">
+                                    <th class="h-10 font-medium flex items-center justify-end gap-4 w-36">
                                         <span class="flex items-center justify-center gap-2 cursor-pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -166,6 +170,11 @@ if (isset($_GET['id'])) {
                                             </svg>
                                             Editar
                                         </span>
+                                        <a href="actions/delete.php?id=<?= $transaction['id']; ?>" class="flex items-center justify-center cursor-pointer bg-rose-600 rounded size-8">
+                                            <input type="hidden" name="month_id" value="<?= intval($_GET['id']); ?>">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stroke-zinc-50"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                        </a>
                                     </th>
                                 </tr>
                             <?php endforeach; ?>
