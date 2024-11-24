@@ -1,8 +1,33 @@
 <?php
+header('Content-Type: text/html; charset=utf-8');
+
+// Configura o charset interno para UTF-8
+mb_internal_encoding('UTF-8');
+
+// Configura a saída do PHP para UTF-8
+ini_set('default_charset', 'UTF-8');
+
+setlocale(LC_TIME, 'pt_BR.utf8', 'portuguese');
+
 session_start();
 require_once('actions/connect.php');
 
-$sql = "SELECT * FROM month";
+$meses = [
+    'January' => 'Janeiro',
+    'February' => 'Fevereiro',
+    'March' => 'Março',
+    'April' => 'Abril',
+    'May' => 'Maio',
+    'June' => 'Junho',
+    'July' => 'Julho',
+    'August' => 'Agosto',
+    'September' => 'Setembro',
+    'October' => 'Outubro',
+    'November' => 'Novembro',
+    'December' => 'Dezembro'
+];
+
+$sql = "SELECT * FROM month ORDER BY month_date DESC";
 $result = mysqli_query($conn, $sql);
 
 $totalIncome = 0;
@@ -31,12 +56,12 @@ if ($result->num_rows > 0) {
 
             $months[] = [
                 'id' => $row['id'],
-                'month_date' => $row['month_date'],
+                'month_date' => date('F', strtotime($row['month_date'])),
+                'year' => date('Y', strtotime($row['month_date'])),
                 'expense' => $totalExpenseForMonth,
                 'income' => $totalIncomeForMonth,
                 'balance' => $balance,
             ];
-
             $totalIncome += $totalIncomeForMonth;
             $totalExpense += $totalExpenseForMonth;
         }
@@ -135,8 +160,8 @@ if ($result->num_rows > 0) {
             <?php foreach ($months as $mes): ?>
             <a href="historic.php?id=<?= $mes['id'] ?>" class="border rounded-xl shadow cursor-pointer bg-white">
                 <div class="border-b p-4 flex justify-between items-center">
-                    <span class="text-lg font-bold text-primary"><?= date('F', strtotime($mes['month_date'])) ?></span>
-                    <span class="text-sm text-gray-500">#<?= $mes['id'] ?></span>
+                    <span class="text-lg font-bold text-primary"><?= $meses[$mes['month_date']] ?></span>
+                    <span class="text-sm text-gray-500">#<?= $mes['year'] ?></span>
                 </div>
                 <div class="p-4">
                     <div class="space-y-4">
@@ -152,14 +177,25 @@ if ($result->num_rows > 0) {
                     <div class="mt-4 pt-4 border-t">
                         <p class="text-lg font-semibold flex justify-between items-center">
                             <span class="text-primary">Saldo:</span>
-                            <span class="text-green-600 flex items-center">
+                            <span class="flex items-center
+                            <?php 
+                                if ($mes['balance'] > 0) {
+                                    echo 'text-green-600'; 
+                                } elseif ($mes['balance'] == 0) {
+                                    echo 'text-yellow-400'; 
+                                } else {
+                                    echo 'text-red-600'; 
+                                }
+                            ?>
+                            ">
                                 R$ <?= number_format($mes['balance'], 2, ',', '.') ?>
-                                <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-                                    <polyline points="16 7 22 7 22 13" />
-                                </svg>
+                                <?php if ($mes['balance'] > 0): ?>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                                <?php elseif ($mes['balance'] == 0): ?>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right"><path d="M18 8L22 12L18 16"/><path d="M2 12H22"/></svg>
+                                <?php else: ?>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-down"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
+                                <?php endif; ?>
                             </span>
                         </p>
                     </div>
