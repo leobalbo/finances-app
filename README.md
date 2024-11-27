@@ -16,7 +16,7 @@ Disciplina: Desenvolvimento Web
 
 ## Screenshots
 
-![App Screenshot](.github/index.png)
+![App Screenshot](.github/Index.png)
 ![App Screenshot](.github/cadastrar_mes.png)
 ![App Screenshot](.github/cadastrar_despesas.png)
 
