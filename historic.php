@@ -15,8 +15,8 @@ if (isset($_GET['id'])) {
     $transactions = [];
     if ($result && mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $transactions[] = $row; 
-            
+            $transactions[] = $row;
+
             if ($row['type'] === 'Entrada') {
                 $totalIncome += $row['value'];
             } elseif ($row['type'] === 'Saida') {
@@ -25,7 +25,6 @@ if (isset($_GET['id'])) {
         }
         $finalBalance = $totalIncome - $totalExpense;
     }
-
 } else {
     echo "ID do mês não especificado.";
     exit();
@@ -50,7 +49,10 @@ if (isset($_GET['id'])) {
         <!-- Header -->
         <div class="flex justify-between items-center">
             <a href="index.php" class="bg-rose-500 hover:bg-rose-600 text-white font-semibold py-2 px-4 rounded flex gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-corner-down-left"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-corner-down-left">
+                    <polyline points="9 10 4 15 9 20" />
+                    <path d="M20 4v7a4 4 0 0 1-4 4H4" />
+                </svg>
                 Voltar
             </a>
             <h1 class="text-2xl font-bold w-auto ml-28">Histórico de transações</h1>
@@ -161,14 +163,16 @@ if (isset($_GET['id'])) {
                                     <td class="h-10 px-2 py-4 text-left align-middle font-medium"><?= date('d/m/Y', strtotime($transaction['date'])); ?></td>
                                     <th class="h-10 font-medium flex items-center justify-end gap-4 w-36">
                                         <span class="flex items-center justify-center gap-2 cursor-pointer">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round">
-                                                <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                                <path
-                                                    d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
-                                            </svg>
-                                            Editar
+                                            <a href="edit.php?id=<?= $transaction['id']; ?>" class="flex items-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                    <path
+                                                        d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
+                                                </svg>
+                                                Editar
+                                            </a>
                                         </span>
                                         <form action="actions/delete.php" method="POST" class="flex items-center justify-center cursor-pointer bg-rose-600 rounded size-8">
                                             
